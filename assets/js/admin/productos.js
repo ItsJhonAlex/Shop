@@ -11,9 +11,9 @@ function cargarProductos() {
     // Aquí deberías hacer una llamada a tu API o base de datos
     // Por ahora, usaremos datos de ejemplo
     productosOriginales = [
-        { id: 'PROD001', nombre: 'Camisa Azul', precio: 19.99, talla: 'M', color: 'Azul', stock: 100, imagen: 'img/camisa-azul.jpg' },
-        { id: 'PROD002', nombre: 'Camisa Roja', precio: 39.99, talla: 'L', color: 'Rojo', stock: 50, imagen: 'img/camisa-roja.jpg' },
-        { id: 'PROD003', nombre: 'Camisa Verde', precio: 59.99, talla: '42', color: 'Verde', stock: 30, imagen: 'img/camisa-verde.jpg' },
+        { id: 'PROD001', nombre: 'Camisa Azul', precio: 19.99, talla: 'M', color: 'Azul', stock: 100, imagen: '../../assets/img/camisa-azul.jpg', descripcion: 'Camisa de algodón color azul' },
+        { id: 'PROD002', nombre: 'Camisa Roja', precio: 39.99, talla: 'L', color: 'Rojo', stock: 50, imagen: '../../assets/img/camisa-roja.jpg', descripcion: 'Camisa de lino color rojo' },
+        { id: 'PROD003', nombre: 'Camisa Verde', precio: 59.99, talla: '42', color: 'Verde', stock: 30, imagen: '../../assets/img/camisa-verde.jpg', descripcion: 'Camisa de seda color verde' },
     ];
     productos = [...productosOriginales];
     mostrarProductos();
@@ -39,6 +39,7 @@ function mostrarProductos() {
             <td data-label="Stock">${producto.stock}</td>
             <td data-label="Imagen"><img src="${producto.imagen}" alt="${producto.nombre}" style="width: 50px; height: 50px;"></td>
             <td data-label="Acciones">
+                <button class="btn btn-sm btn-info ver-mas-producto" data-id="${producto.id}">Ver más</button>
                 <button class="btn btn-sm btn-primary editar-producto" data-id="${producto.id}">Editar</button>
                 <button class="btn btn-sm btn-danger eliminar-producto" data-id="${producto.id}">Eliminar</button>
             </td>
@@ -46,7 +47,15 @@ function mostrarProductos() {
         tbody.appendChild(tr);
     });
 
-    // Agregar event listeners a los botones de editar y eliminar
+    // Agregar event listeners a los botones
+    document.querySelectorAll('.ver-mas-producto').forEach(button => {
+        button.addEventListener('click', function() {
+            const productoId = this.getAttribute('data-id');
+            console.log('Ver más clicked para producto:', productoId); // Agregar este log
+            mostrarDetallesProducto(productoId);
+        });
+    });
+
     document.querySelectorAll('.editar-producto').forEach(button => {
         button.addEventListener('click', function() {
             const productoId = this.getAttribute('data-id');
@@ -60,6 +69,28 @@ function mostrarProductos() {
             mostrarConfirmacionEliminarProducto(productoId);
         });
     });
+}
+
+function mostrarDetallesProducto(productoId) {
+    console.log('Mostrando detalles para producto:', productoId); // Agregar este log
+    const producto = productos.find(p => p.id === productoId);
+    if (producto) {
+        const modalBody = document.getElementById('verMasProductoBody');
+        modalBody.innerHTML = `
+            <p><strong>ID:</strong> ${producto.id}</p>
+            <p><strong>Nombre:</strong> ${producto.nombre}</p>
+            <p><strong>Precio:</strong> $${producto.precio.toFixed(2)}</p>
+            <p><strong>Talla:</strong> ${producto.talla}</p>
+            <p><strong>Color:</strong> ${producto.color}</p>
+            <p><strong>Stock:</strong> ${producto.stock}</p>
+            <p><strong>Descripción:</strong> ${producto.descripcion}</p>
+            <img src="${producto.imagen}" alt="${producto.nombre}" style="max-width: 100%;">
+        `;
+        const modal = new bootstrap.Modal(document.getElementById('verMasProductoModal'));
+        modal.show();
+    } else {
+        console.error('Producto no encontrado');
+    }
 }
 
 function mostrarConfirmacionEliminarProducto(productoId) {
@@ -90,6 +121,7 @@ function abrirModalEditarProducto(productoId) {
         document.getElementById('editProductoTalla').value = producto.talla;
         document.getElementById('editProductoColor').value = producto.color;
         document.getElementById('editProductoStock').value = producto.stock;
+        document.getElementById('editProductoDescripcion').value = producto.descripcion;
 
         const modal = new bootstrap.Modal(document.getElementById('editarProductoModal'));
         modal.show();
@@ -102,6 +134,7 @@ function validarFormularioProducto() {
     const talla = document.getElementById('editProductoTalla').value.trim();
     const color = document.getElementById('editProductoColor').value.trim();
     const stock = document.getElementById('editProductoStock').value.trim();
+    const descripcion = document.getElementById('editProductoDescripcion').value.trim();
 
     if (nombre === '') {
         mostrarError('editProductoNombre', 'El nombre es obligatorio');
@@ -125,6 +158,11 @@ function validarFormularioProducto() {
 
     if (stock === '' || isNaN(stock) || parseInt(stock) < 0) {
         mostrarError('editProductoStock', 'El stock debe ser un número no negativo');
+        return false;
+    }
+
+    if (descripcion === '') {
+        mostrarError('editProductoDescripcion', 'La descripción es obligatoria');
         return false;
     }
 
@@ -165,6 +203,7 @@ function guardarCambiosProducto() {
                 talla: document.getElementById('editProductoTalla').value,
                 color: document.getElementById('editProductoColor').value,
                 stock: parseInt(document.getElementById('editProductoStock').value),
+                descripcion: document.getElementById('editProductoDescripcion').value,
                 imagen: productos[productoIndex].imagen // Mantener la imagen existente
             };
 
@@ -249,9 +288,7 @@ function ordenarProductos(columna) {
         return 0;
     });
 
-    currentPage = 1;
     mostrarProductos();
-    actualizarPaginacion();
 }
 
 function filtrarPorPrecio() {
@@ -267,19 +304,23 @@ function filtrarPorPrecio() {
     actualizarPaginacion();
 }
 
-function mostrarAlerta(mensaje, tipo = 'success') {
-    const alertaDiv = document.createElement('div');
-    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
-    alertaDiv.role = 'alert';
-    alertaDiv.innerHTML = `
-        ${mensaje}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    document.querySelector('.container-fluid').insertAdjacentElement('afterbegin', alertaDiv);
-    
+function mostrarAlerta(mensaje, tipo) {
+    const alertPlaceholder = document.getElementById('alertPlaceholder');
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = [
+        `<div class="alert alert-${tipo} alert-dismissible" role="alert">`,
+        `   <div>${mensaje}</div>`,
+        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+        '</div>'
+    ].join('');
+
+    alertPlaceholder.append(wrapper);
+
+    // Eliminar la alerta después de 3 segundos
     setTimeout(() => {
-        alertaDiv.remove();
-    }, 5000);
+        const alert = bootstrap.Alert.getOrCreateInstance(wrapper.firstElementChild);
+        alert.close();
+    }, 3000);
 }
 
 function configurarEventListeners() {
@@ -290,25 +331,59 @@ function configurarEventListeners() {
         }
     });
 
-    document.querySelectorAll('th a').forEach(th => {
-        th.addEventListener('click', function(e) {
-            e.preventDefault();
-            const columna = this.getAttribute('data-sort');
-            ordenarProductos(columna);
+    document.getElementById('filtrarPrecioBtn').addEventListener('click', filtrarPorPrecio);
+
+    document.getElementById('confirmarEliminarProductoBtn').addEventListener('click', eliminarProducto);
+
+    document.getElementById('guardarProductoEditadoBtn').addEventListener('click', guardarCambiosProducto);
+
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+        th.addEventListener('click', function() {
+            ordenarProductos(this.getAttribute('data-sort'));
         });
     });
 
     document.getElementById('productosPagination').addEventListener('click', function(e) {
-        e.preventDefault();
         if (e.target.tagName === 'A' && e.target.hasAttribute('data-page')) {
+            e.preventDefault();
             const newPage = parseInt(e.target.getAttribute('data-page'));
             cambiarPagina(newPage);
         }
     });
 
-    document.getElementById('filtrarPrecioBtn').addEventListener('click', filtrarPorPrecio);
-    document.getElementById('guardarProductoEditadoBtn').addEventListener('click', guardarCambiosProducto);
-    document.getElementById('confirmarEliminarProductoBtn').addEventListener('click', eliminarProducto);
+    document.getElementById('guardarProductoBtn').addEventListener('click', guardarNuevoProducto);
+}
+
+function guardarNuevoProducto() {
+    const nombre = document.getElementById('nombreProducto').value;
+    const precio = parseFloat(document.getElementById('precioProducto').value);
+    const talla = document.getElementById('tallaProducto').value;
+    const color = document.getElementById('colorProducto').value;
+    const stock = parseInt(document.getElementById('stockProducto').value);
+    const imagen = document.getElementById('imagenProducto').files[0];
+    const descripcion = document.getElementById('descripcionProducto').value;
+
+    const nuevoProducto = {
+        id: `PROD${productos.length + 1}`.padStart(7, '0'),
+        nombre,
+        precio,
+        talla,
+        color,
+        stock,
+        imagen: URL.createObjectURL(imagen),
+        descripcion
+    };
+
+    productos.push(nuevoProducto);
+    productosOriginales.push(nuevoProducto);
+
+    mostrarProductos();
+    actualizarPaginacion();
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('nuevoProductoModal'));
+    modal.hide();
+
+    mostrarAlerta('Producto agregado con éxito', 'success');
 }
 
 export function activarProductos() {

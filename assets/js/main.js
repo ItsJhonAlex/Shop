@@ -1,12 +1,18 @@
 import { cargarProductos } from './productos.js';
-import { inicializarCarrito } from './shop.js';
+import { obtenerCarrito } from './shop.js';
 import { verificarSesion } from './auth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarProductos();
-    inicializarCarrito();
+    actualizarContadorCarrito();
     verificarSesion();
 });
+
+function actualizarContadorCarrito() {
+    const carrito = obtenerCarrito();
+    const cantidadTotal = carrito.reduce((total, item) => total + item.cantidad, 0);
+    document.getElementById('carritoCount').textContent = cantidadTotal;
+}
 
 function verificarSesion() {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
