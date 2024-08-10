@@ -1,0 +1,82 @@
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(15deg, #1ae769 , #401ae7);
+}
+
+h1{
+  font-size: 30px;
+  margin: 10px;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: 500;
+}
+ 
+.form label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  border-radius: 20px;
+  padding: 0 10px;
+  background-color: rgba(255, 255, 255, 0);
+ 
+}
+
+.form label .inputs {
+  width: 100%;
+  padding: 10px;
+  background-color:  rgba(255, 255, 255, 0);
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: #181717 solid 2px;
+  outline: none;
+ 
+  color: #0e0404;
+}
+.form label input::placeholder{
+  color: #0e0404;
+}
+
+.form label i {
+  color: #181717;
+}
+
+/*Botones*/
+
+.botones{
+  display: flex;
+  justify-content: space-around;
+ 
+}
+
+.botones label input{
+  background: none;
+}
+
+.botones label{
+  width: 200px;
+  display: flex;
+  justify-content: space-around;
+  padding: 2px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.Enviar .Boton_enviar{
+  border: none;
+  width: 100px;
+  padding: 5px;
+  background: #d6f1e0;
+}
+

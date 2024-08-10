@@ -1,0 +1,50 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Productos</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#nuevoProductoModal">
+            <i class="bi bi-plus-circle"></i> Nuevo Producto
+        </button>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" id="searchInputProductos" class="form-control" placeholder="Buscar por ID o nombre del producto" aria-label="Buscar producto">
+            <button class="btn btn-outline-secondary" type="button" id="searchButtonProductos" aria-label="Buscar">Buscar</button>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="number" id="minPrecio" class="form-control" placeholder="Precio mínimo" aria-label="Precio mínimo">
+            <input type="number" id="maxPrecio" class="form-control" placeholder="Precio máximo" aria-label="Precio máximo">
+            <button class="btn btn-outline-secondary" type="button" id="filtrarPrecioBtn" aria-label="Filtrar por precio">Filtrar por precio</button>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover table-mobile-responsive" aria-label="Lista de productos">
+        <thead>
+            <tr>
+                <th scope="col"><a href="#" class="text-white" data-sort="id" aria-sort="none">ID <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col"><a href="#" class="text-white" data-sort="nombre" aria-sort="none">Nombre <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col"><a href="#" class="text-white" data-sort="precio" aria-sort="none">Precio <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col"><a href="#" class="text-white" data-sort="talla" aria-sort="none">Talla <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col"><a href="#" class="text-white" data-sort="color" aria-sort="none">Color <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col"><a href="#" class="text-white" data-sort="stock" aria-sort="none">Stock <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col">Imagen</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="productosTableBody">
+            <!-- Los datos de los productos se cargarán aquí dinámicamente -->
+        </tbody>
+    </table>
+</div>
+
+<nav aria-label="Paginación de productos">
+    <ul class="pagination justify-content-center" id="productosPagination">
+        <!-- Los números de página se generarán dinámicamente aquí -->
+    </ul>
+</nav>

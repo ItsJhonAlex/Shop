@@ -1,0 +1,88 @@
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración del editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Dependencias
+/node_modules
+/vendor
+
+# Archivos de construcción
+/build
+/dist
+
+# Archivos de ambiente
+.env
+.env.local
+.env.*.local
+
+# Archivos de log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos temporales
+*.tmp
+*.swp
+*.swo
+
+# Archivos de caché
+.cache/
+
+# Archivos de cobertura de pruebas
+/coverage
+
+# Archivos de producción
+/production
+
+# Archivos de respaldo
+*.bak
+*.backup
+
+# Archivos de base de datos
+*.sqlite
+
+# Archivos de configuración personal
+config.js
+config.json
+
+# Archivos de certificados SSL
+*.pem
+*.key
+*.crt
+
+# Archivos de imágenes y medios (descomenta si no quieres trackear estos archivos)
+# /assets/img/*
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
+# *.mp4
+# *.mov
+
+# Archivos específicos del proyecto (añade aquí cualquier archivo o carpeta específica que no quieras trackear)
+
+# Archivos de dependencias específicas del frontend (si estás usando algún gestor de paquetes)
+# /assets/vendor/
+
+# Archivos compilados de CSS y JS (si estás usando preprocesadores o bundlers)
+# /assets/css/*.min.css
+# /assets/js/*.min.js
+
+# Archivos de caché del navegador
+.htaccess
+
+# Archivos de respaldo de editores
+*~
+
+# Archivos de sesión de PHP
+sess_*
+
+# Archivos de configuración de PHPStorm
+.phpstorm.meta.php

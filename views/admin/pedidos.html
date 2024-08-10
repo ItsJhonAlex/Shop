@@ -1,0 +1,50 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Pedidos</h1>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" id="searchInputPedidos" class="form-control" placeholder="Buscar por ID o cliente" aria-label="Buscar pedidos">
+            <button class="btn btn-outline-secondary" type="button" id="searchButtonPedidos" aria-label="Buscar">Buscar</button>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="input-group">
+            <select id="filtroEstadoPedido" class="form-select" aria-label="Filtrar por estado del pedido">
+                <option value="">Todos los estados</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Enviado">Enviado</option>
+                <option value="Entregado">Entregado</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+            <button class="btn btn-outline-secondary" type="button" id="filtrarEstadoBtn" aria-label="Filtrar por estado">Filtrar por estado</button>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover table-mobile-responsive" aria-label="Lista de pedidos">
+        <thead>
+            <tr>
+                <th><a href="#" class="text-white" data-sort="id">ID <i class="bi bi-arrow-down-up"></i></a></th>
+                <th><a href="#" class="text-white" data-sort="cliente">Cliente <i class="bi bi-arrow-down-up"></i></a></th>
+                <th><a href="#" class="text-white" data-sort="fecha">Fecha <i class="bi bi-arrow-down-up"></i></a></th>
+                <th><a href="#" class="text-white" data-sort="total">Total <i class="bi bi-arrow-down-up"></i></a></th>
+                <th><a href="#" class="text-white" data-sort="estado">Estado <i class="bi bi-arrow-down-up"></i></a></th>
+                <th><a href="#" class="text-white" data-sort="direccion">Dirección <i class="bi bi-arrow-down-up"></i></a></th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="pedidosTableBody">
+            <!-- Los datos de los pedidos se cargarán aquí dinámicamente -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Paginación -->
+<nav aria-label="Paginación de pedidos">
+    <ul class="pagination justify-content-center" id="pedidosPagination">
+        <!-- Los números de página se generarán dinámicamente aquí -->
+    </ul>
+</nav>

@@ -1,0 +1,42 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Clientes</h1>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" id="searchInputClientes" class="form-control" placeholder="Buscar por ID o nombre del cliente" aria-label="Buscar clientes">
+            <button class="btn btn-outline-secondary" type="button" id="searchButtonClientes" aria-label="Buscar">Buscar</button>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" id="filtroDireccion" class="form-control" placeholder="Filtrar por dirección" aria-label="Filtrar por dirección">
+            <button class="btn btn-outline-secondary" type="button" id="filtrarDireccionBtn" aria-label="Filtrar">Filtrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover table-mobile-responsive" aria-label="Lista de clientes">
+        <thead>
+            <tr>
+                <th scope="col"><a href="#" class="text-white" data-sort="id" aria-sort="none">ID <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col"><a href="#" class="text-white" data-sort="nombre" aria-sort="none">Nombre <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col"><a href="#" class="text-white" data-sort="correo" aria-sort="none">Correo <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col"><a href="#" class="text-white" data-sort="direccion" aria-sort="none">Dirección <i class="bi bi-arrow-down-up" aria-hidden="true"></i></a></th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="clientesTableBody">
+            <!-- Los datos de los clientes se cargarán aquí dinámicamente -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Paginación -->
+<nav aria-label="Paginación de clientes">
+    <ul class="pagination justify-content-center" id="clientesPagination">
+        <!-- Los números de página se generarán dinámicamente aquí -->
+    </ul>
+</nav>
