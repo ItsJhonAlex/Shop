@@ -1,0 +1,153 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+.navbar {
+    background-color: #c7eef3;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+}
+
+.navbar-brand, .nav-link {
+    color: #333 !important;
+}
+
+.nav-link:hover {
+    color: #9191bd !important;
+}
+
+.btn-primary {
+    background-color: #9191bd;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #7a7a9a;
+}
+
+#hero {
+    background-color: #c7eef3;
+    border-radius: 20px;
+    padding: 50px 0;
+    margin-top: 20px;
+}
+
+#hero h1 {
+    color: #333;
+    font-size: 2.5rem;
+}
+
+#hero p {
+    color: #555;
+}
+
+#catalogo {
+    margin-top: 50px;
+}
+
+.card {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-body {
+    background-color: #fff;
+}
+
+.card-title {
+    color: #333;
+    font-weight: 600;
+}
+
+.card-text {
+    color: #555;
+}
+
+.btn-add-to-cart {
+    background-color: #9191bd;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-add-to-cart:hover {
+    background-color: #7a7a9a;
+}
+
+#carritoModal .modal-content {
+    border-radius: 20px;
+    background-color: #f8f8f8;
+}
+
+#carritoModal .modal-header {
+    background-color: #c7eef3;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+#carritoModal .modal-title {
+    color: #333;
+}
+
+#carritoModal .modal-body {
+    color: #555;
+}
+
+#carritoModal .btn-close {
+    color: #333;
+}
+
+footer {
+    background-color: #c7eef3;
+    color: #333;
+    margin-top: 50px;
+}
+
+footer h5 {
+    color: #333;
+    font-weight: 600;
+}
+
+footer a {
+    color: #555;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #9191bd;
+}
+
+@media (max-width: 768px) {
+    #hero {
+        padding: 30px 0;
+    }
+
+    #hero h1 {
+        font-size: 2rem;
+    }
+}

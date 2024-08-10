@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const html = await response.text();
             contenidoPrincipal.innerHTML = html;
             
+            // Aplicar estilos consistentes a los elementos cargados dinámicamente
+            aplicarEstilosConsistentes();
+
             // Aplicar la clase 'loaded' después de un breve retraso
             setTimeout(() => {
                 contenidoPrincipal.classList.add('loaded');
@@ -42,6 +45,28 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error al cargar la sección:', error);
             contenidoPrincipal.innerHTML = '<p>Error al cargar la sección. Por favor, intente de nuevo.</p>';
         }
+    }
+
+    function aplicarEstilosConsistentes() {
+        // Aplicar estilos a los inputs y selects
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+
+        // Aplicar estilos a los botones
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            if (!button.classList.contains('btn')) {
+                button.classList.add('btn', 'btn-primary');
+            }
+        });
+
+        // Aplicar estilos a las tablas
+        const tables = document.querySelectorAll('table');
+        tables.forEach(table => {
+            table.classList.add('table', 'table-dark', 'table-striped');
+        });
     }
 
     // Asegúrate de remover la clase 'loaded' antes de cargar una nueva sección
