@@ -1,8 +1,10 @@
+import { agregarAlCarrito } from './shop.js';
+
 // Array para almacenar los productos
 let productos = [];
 
 // Función para cargar los productos desde el servidor o una fuente de datos
-async function cargarProductos() {
+export async function cargarProductos() {
     try {
         // Aquí deberías hacer una llamada a tu API o base de datos
         // Por ahora, usaremos datos de ejemplo
@@ -20,6 +22,7 @@ async function cargarProductos() {
 
 // Función para mostrar los productos en el catálogo
 function mostrarProductos() {
+    console.log('Mostrando productos:', productos); // Agregar este log
     const contenedorProductos = document.getElementById('productosContainer');
     if (!contenedorProductos) {
         console.error('El contenedor de productos no se encontró en el DOM');
@@ -31,7 +34,7 @@ function mostrarProductos() {
         const productoElement = document.createElement('div');
         productoElement.className = 'col-md-4 mb-4';
         productoElement.innerHTML = `
-            <div class="card h-100">
+            <div class="card">
                 <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre}">
                 <div class="card-body">
                     <h5 class="card-title">${producto.nombre}</h5>
@@ -48,25 +51,10 @@ function mostrarProductos() {
 
     // Agregar event listeners a los botones "Agregar al carrito"
     document.querySelectorAll('.agregar-al-carrito').forEach(button => {
-        button.addEventListener('click', agregarAlCarrito);
+        button.addEventListener('click', (e) => {
+            const id = parseInt(e.target.getAttribute('data-id'));
+            const producto = productos.find(p => p.id === id);
+            agregarAlCarrito(producto);
+        });
     });
 }
-
-// Función para agregar un producto al carrito
-function agregarAlCarrito(event) {
-    const productoId = parseInt(event.target.getAttribute('data-id'));
-    const producto = productos.find(p => p.id === productoId);
-    
-    if (producto) {
-        // Aquí deberías implementar la lógica para agregar el producto al carrito
-        // Por ejemplo, podrías usar localStorage o enviar una petición al servidor
-        console.log('Producto agregado al carrito:', producto);
-        alert(`${producto.nombre} (Talla: ${producto.talla}, Color: ${producto.color}) ha sido agregado al carrito`);
-    }
-}
-
-// Cargar productos cuando se carga la página
-document.addEventListener('DOMContentLoaded', cargarProductos);
-
-// Exportar funciones que se usarán en otros archivos
-export { cargarProductos, agregarAlCarrito };
