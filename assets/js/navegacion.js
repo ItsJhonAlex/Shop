@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function cargarSeccion(section) {
-        fetch(`admin/${section}.html`)
+        fetch(`admin/${section}`)
             .then(response => response.text())
             .then(html => {
                 contenidoPrincipal.innerHTML = html;
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Has cerrado sesión exitosamente');
             
             // Redirigir a la página principal
-            window.location.href = 'index.html';
+            window.location.href = '/';
         }
     }
 

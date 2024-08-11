@@ -20,6 +20,10 @@ proyecto/
 │ │ │ └── productos.js
 │ │ │
 │ │ ├── login.js
+│ │ ├── auth.js
+│ │ ├── db.js
+│ │ ├── main.js
+│ │ ├── productos.js
 │ │ ├── navegacion.js
 │ │ └── shop.js
 │ │
@@ -37,7 +41,11 @@ proyecto/
 │ ├── panel-admin.html
 │ └── shop.html
 │
+├── server.js
+├── .env
+├── package.json
 └── README.md
+
 ## Requisitos
 
 - Servidor web (Apache, Nginx, etc.)

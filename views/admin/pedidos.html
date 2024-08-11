@@ -1,5 +1,10 @@
 <section id="pedidos" class="py-5">
-    <h2 class="mb-4">Pedidos</h2>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Pedidos</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <!-- Puedes agregar aquí un botón si es necesario, similar al de productos -->
+        </div>
+    </div>
 
     <div class="row mb-3">
         <div class="col-md-6">
@@ -47,3 +52,21 @@
         </ul>
     </nav>
 </section>
+
+<!-- Modal para ver más detalles del pedido -->
+<div class="modal fade" id="verMasPedidoModal" tabindex="-1" aria-labelledby="verMasPedidoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="verMasPedidoModalLabel">Detalles del Pedido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="verMasPedidoBody">
+                <!-- Los detalles del pedido se cargarán aquí dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

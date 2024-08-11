@@ -9,9 +9,9 @@ export async function cargarProductos() {
         // Aquí deberías hacer una llamada a tu API o base de datos
         // Por ahora, usaremos datos de ejemplo
         productos = [
-            { id: 1, nombre: 'Camisa Azul', precio: 29.99, imagen: '../assets/img/camisa-azul.jpg', descripcion: 'Camisa de algodón', talla: 'M', color: 'Azul' },
-            { id: 2, nombre: 'Camisa Roja', precio: 39.99, imagen: '../assets/img/camisa-roja.jpg', descripcion: 'Camisa de lino', talla: 'L', color: 'Rojo' },
-            { id: 3, nombre: 'Camisa Verde', precio: 59.99, imagen: '../assets/img/camisa-verde.jpg', descripcion: 'Camisa de seda', talla: 'S', color: 'Verde' },
+            { id: 1, nombre: 'Camisa Azul', precio: 29.99, imagen: '/assets/img/camisa-azul.jpg', descripcion: 'Camisa de algodón', talla: 'M', color: 'Azul' },
+            { id: 2, nombre: 'Camisa Roja', precio: 39.99, imagen: '/assets/img/camisa-roja.jpg', descripcion: 'Camisa de lino', talla: 'L', color: 'Rojo' },
+            { id: 3, nombre: 'Camisa Verde', precio: 59.99, imagen: '/assets/img/camisa-verde.jpg', descripcion: 'Camisa de seda', talla: 'S', color: 'Verde' },
             // Agrega más productos aquí
         ];
         mostrarProductos();
@@ -22,7 +22,7 @@ export async function cargarProductos() {
 
 // Función para mostrar los productos en el catálogo
 function mostrarProductos() {
-    console.log('Mostrando productos:', productos); // Agregar este log
+    console.log('Mostrando productos:', productos); // Mantén este log
     const contenedorProductos = document.getElementById('productosContainer');
     if (!contenedorProductos) {
         console.error('El contenedor de productos no se encontró en el DOM');
@@ -58,3 +58,6 @@ function mostrarProductos() {
         });
     });
 }
+
+// Llamar a cargarProductos cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', cargarProductos);

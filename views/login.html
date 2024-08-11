@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../assets/css/login.css">
-    <title>FORMULARIO DE REGISTRO E INICIO SESIÓN</title>
+    <link rel="stylesheet" href="/assets/css/login.css">
+    <title>Inicio de Sesión - Tienda en Línea</title>
 </head>
 <body>
     <div class="container-form register">
@@ -27,26 +27,37 @@
                     <i class='bx bxl-google'></i>
                 </div>
                 <p>o usa tu email para registrarte</p>
-                <form class="form form-register" >
+                <form class="form form-register" id="registroForm">
                     <div>
                         <label>
                             <i class='bx bx-user' ></i>
-                            <input type="text" placeholder="Nombre Usuario" name="userName"  required minlength="3" maxlength="30">
+                            <input type="text" placeholder="Nombre Usuario" id="nombre" name="userName" required minlength="3" maxlength="30">
                         </label>
                     </div>
                     <div>
                         <label >
                             <i class='bx bx-envelope' ></i>
-                            <input type="email" placeholder="Correo Electronico" name="userEmail" required >
+                            <input type="email" placeholder="Correo Electronico" id="email" name="userEmail" required >
                         </label>
                     </div>
-                   <div>
+                    <div>
+                        <label>
+                            <i class='bx bx-home' ></i>
+                            <input type="text" placeholder="Dirección" id="direccion" name="userAddress" required>
+                        </label>
+                    </div>
+                    <div>
                         <label>
                             <i class='bx bx-lock-alt' ></i>
-                            <input type="password" placeholder="Contraseña" name="userPassword"required minlength="8" maxlength="20">
+                            <input type="password" placeholder="Contraseña" id="password" name="userPassword" required minlength="8" maxlength="20">
                         </label>
-                   </div>
-                   
+                    </div>
+                    <div>
+                        <label>
+                            <i class='bx bx-lock-alt' ></i>
+                            <input type="password" placeholder="Confirmar Contraseña" id="confirmPassword" name="confirmPassword" required minlength="8" maxlength="20">
+                        </label>
+                    </div>
                     <input type="submit" value="Registrarse">
                     <div class="alerta-error">Todos los campos son obligatorios</div>
                     <div class="alerta-exito">Te registraste correctamente</div>
@@ -54,7 +65,6 @@
             </div>
         </div>
     </div>
-
 
     <div class="container-form login hide">
         <div class="information">
@@ -69,14 +79,13 @@
                 <h2>Iniciar Sesión</h2>
                 <div class="icons">
                     <i class='bx bxl-google'></i>
-                
                 </div>
                 <p>o Iniciar Sesión con una cuenta</p>
                 <form class="form form-login">
                     <div>
                         <label >
                             <i class='bx bx-envelope' ></i>
-                            <input type="email" placeholder="Correo Electronico" name="userPassword" required >
+                            <input type="email" placeholder="Correo Electronico" name="userEmail" required >
                         </label>
                     </div>
                     <div>
@@ -87,11 +96,11 @@
                     </div>
                     <input type="submit" value="Iniciar Sesión">
                     <div class="alerta-error">Todos los campos son obligatorios</div>
-                    <div class="alerta-exito">Te registraste correctamente</div>
+                    <div class="alerta-exito">Iniciaste sesión correctamente</div>
                 </form>
             </div>
         </div>
     </div>
-    <script src="../assets/js/login.js"></script>
+    <script src="/assets/js/login.js" type="module"></script>
 </body>
 </html>

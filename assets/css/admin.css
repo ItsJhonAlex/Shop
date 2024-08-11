@@ -29,3 +29,19 @@
     background-color: #9191bd;
     border-color: #9191bd;
 }
+
+.sort-icon {
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.sort-icon:hover {
+    color: #9191bd;
+}
+
+th[data-sort] {
+    cursor: pointer;
+}
+th[data-sort]:hover {
+    color: #9191bd;
+}
