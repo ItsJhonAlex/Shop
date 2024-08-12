@@ -2,33 +2,32 @@ import { agregarAlCarrito } from './shop.js';
 
 // Array para almacenar los productos
 let productos = [];
+let productosOriginales = [];
 
-// Función para cargar los productos desde el servidor o una fuente de datos
+// Función para cargar los productos desde el servidor
 export async function cargarProductos() {
     try {
-        // Aquí deberías hacer una llamada a tu API o base de datos
-        // Por ahora, usaremos datos de ejemplo
-        productos = [
-            { id: 1, nombre: 'Camisa Azul', precio: 29.99, imagen: '/assets/img/camisa-azul.jpg', descripcion: 'Camisa de algodón', talla: 'M', color: 'Azul' },
-            { id: 2, nombre: 'Camisa Roja', precio: 39.99, imagen: '/assets/img/camisa-roja.jpg', descripcion: 'Camisa de lino', talla: 'L', color: 'Rojo' },
-            { id: 3, nombre: 'Camisa Verde', precio: 59.99, imagen: '/assets/img/camisa-verde.jpg', descripcion: 'Camisa de seda', talla: 'S', color: 'Verde' },
-            // Agrega más productos aquí
-        ];
+        const response = await fetch('/api/productos');
+        if (!response.ok) {
+            throw new Error('Error al cargar los productos');
+        }
+        productosOriginales = await response.json();
+        productos = [...productosOriginales];
         mostrarProductos();
     } catch (error) {
-        console.error('Error al cargar los productos:', error);
+        console.error('Error al cargar productos:', error);
     }
 }
 
 // Función para mostrar los productos en el catálogo
 function mostrarProductos() {
-    console.log('Mostrando productos:', productos); // Mantén este log
+    console.log('Mostrando productos:', productos); // Mantén este log para depuración
     const contenedorProductos = document.getElementById('productosContainer');
     if (!contenedorProductos) {
         console.error('El contenedor de productos no se encontró en el DOM');
         return;
     }
-    contenedorProductos.innerHTML = '';
+    contenedorProductos.innerHTML = ''; // Limpiar el contenedor antes de agregar nuevos productos
 
     productos.forEach(producto => {
         const productoElement = document.createElement('div');
@@ -41,7 +40,7 @@ function mostrarProductos() {
                     <p class="card-text">${producto.descripcion}</p>
                     <p class="card-text"><strong>Talla:</strong> ${producto.talla}</p>
                     <p class="card-text"><strong>Color:</strong> ${producto.color}</p>
-                    <p class="card-text"><strong>Precio: $${producto.precio.toFixed(2)}</strong></p>
+                    <p class="card-text"><strong>Precio: $${Number(producto.precio).toFixed(2)}</strong></p>
                     <button class="btn btn-primary agregar-al-carrito" data-id="${producto.id}">Agregar al carrito</button>
                 </div>
             </div>

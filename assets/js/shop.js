@@ -13,13 +13,14 @@ export function agregarAlCarrito(producto) {
     const itemExistente = carrito.find(item => item.id === producto.id);
 
     if (itemExistente) {
-        itemExistente.cantidad += 1;
+        itemExistente.cantidad += 1; // Incrementar cantidad si ya existe
     } else {
-        carrito.push({ ...producto, cantidad: 1 });
+        carrito.push({ ...producto, cantidad: 1 }); // Agregar nuevo producto
     }
 
     guardarCarrito(carrito);
-    actualizarContadorCarrito();
+    actualizarContadorCarrito(); // Actualizar el contador del carrito
+    mostrarItemsCarrito(); // Mostrar los items en el carrito después de agregar
 }
 
 // Función para actualizar el contador del carrito en la barra de navegación
@@ -38,13 +39,13 @@ function mostrarItemsCarrito() {
     if (!tbody) return; // Si no existe el elemento, salimos de la función
 
     const carrito = obtenerCarrito();
-    tbody.innerHTML = '';
+    tbody.innerHTML = ''; // Limpiar el contenido del tbody
 
     carrito.forEach(item => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${item.nombre}</td>
-            <td>$${item.precio.toFixed(2)}</td>
+            <td>$${Number(item.precio).toFixed(2)}</td>
             <td>
                 <button class="btn btn-sm btn-secondary restar-cantidad" data-id="${item.id}">-</button>
                 <span class="mx-2">${item.cantidad}</span>
@@ -56,7 +57,7 @@ function mostrarItemsCarrito() {
         tbody.appendChild(tr);
     });
 
-    actualizarTotal();
+    actualizarTotal(); // Actualizar el total del carrito
 }
 
 // Función para actualizar el total del carrito
@@ -89,7 +90,7 @@ function manejarCambiosCantidad(e) {
         }
 
         guardarCarrito(carrito);
-        mostrarItemsCarrito();
+        mostrarItemsCarrito(); // Mostrar los items actualizados en el carrito
         actualizarContadorCarrito();
     }
 }
@@ -101,7 +102,7 @@ function eliminarItemCarrito(e) {
         let carrito = obtenerCarrito();
         carrito = carrito.filter(item => item.id !== id);
         guardarCarrito(carrito);
-        mostrarItemsCarrito();
+        mostrarItemsCarrito(); // Mostrar los items actualizados en el carrito
         actualizarContadorCarrito();
     }
 }
@@ -112,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const carritoTableBody = document.getElementById('carritoTableBody');
     if (carritoTableBody) {
-        mostrarItemsCarrito();
+        mostrarItemsCarrito(); // Mostrar los items en el carrito al cargar la página
         carritoTableBody.addEventListener('click', manejarCambiosCantidad);
         carritoTableBody.addEventListener('click', eliminarItemCarrito);
     }
@@ -124,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Aquí iría la lógica para procesar el pedido
             alert('¡Gracias por tu compra!');
             localStorage.removeItem('carrito');
-            mostrarItemsCarrito();
+            mostrarItemsCarrito(); // Limpiar el carrito después de la compra
             actualizarContadorCarrito();
         });
     }

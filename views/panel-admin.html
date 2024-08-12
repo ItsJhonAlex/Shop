@@ -60,54 +60,6 @@
         </div>
     </main>
 
-    <!-- Modal para nuevo producto -->
-    <div class="modal fade" id="nuevoProductoModal" tabindex="-1" aria-labelledby="nuevoProductoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="nuevoProductoModalLabel">Nuevo Producto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="nuevoProductoForm">
-                        <div class="mb-3">
-                            <label for="nombreProducto" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombreProducto" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="precioProducto" class="form-label">Precio</label>
-                            <input type="number" class="form-control" id="precioProducto" step="0.01" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tallaProducto" class="form-label">Talla</label>
-                            <input type="text" class="form-control" id="tallaProducto" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="colorProducto" class="form-label">Color</label>
-                            <input type="text" class="form-control" id="colorProducto" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="stockProducto" class="form-label">Stock</label>
-                            <input type="number" class="form-control" id="stockProducto" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="imagenProducto" class="form-label">Imagen</label>
-                            <input type="file" class="form-control" id="imagenProducto" accept="image/*" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="descripcionProducto" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="descripcionProducto" rows="3" required></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="guardarProductoBtn">Guardar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal para editar pedido -->
     <div class="modal fade" id="editarPedidoModal" tabindex="-1" aria-labelledby="editarPedidoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
@@ -149,70 +101,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="guardarPedidoBtn">Guardar Cambios</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para editar producto -->
-    <div class="modal fade" id="editarProductoModal" tabindex="-1" aria-labelledby="editarProductoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editarProductoModalLabel">Editar Producto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editarProductoForm">
-                        <input type="hidden" id="editProductoId">
-                        <div class="mb-3">
-                            <label for="editProductoNombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="editProductoNombre" required aria-required="true">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editProductoPrecio" class="form-label">Precio</label>
-                            <input type="number" step="0.01" class="form-control" id="editProductoPrecio" required aria-required="true">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editProductoTalla" class="form-label">Talla</label>
-                            <input type="text" class="form-control" id="editProductoTalla" required aria-required="true">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editProductoColor" class="form-label">Color</label>
-                            <input type="text" class="form-control" id="editProductoColor" required aria-required="true">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editProductoStock" class="form-label">Stock</label>
-                            <input type="number" class="form-control" id="editProductoStock" required aria-required="true">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editProductoDescripcion" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="editProductoDescripcion" rows="3" required aria-required="true"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="guardarProductoEditadoBtn">Guardar Cambios</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-<!-- Modal de confirmación para eliminar producto -->
-    <div class="modal fade" id="confirmarEliminarProductoModal" tabindex="-1" aria-labelledby="confirmarEliminarProductoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmarEliminarProductoModalLabel">Confirmar eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    ¿Está seguro de que desea eliminar este producto?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" id="confirmarEliminarProductoBtn">Eliminar</button>
                 </div>
             </div>
         </div>
