@@ -1,301 +1,361 @@
-let pedidosOriginales = [];
 let pedidos = [];
+let pedidosOriginales = [];
+let currentPage = 1;
+const pedidosPorPagina = 10;
 let sortColumn = 'id';
 let sortOrder = 'asc';
-let currentPage = 1;
-const itemsPerPage = 10; // Puedes ajustar este número según tus necesidades
 
-let pedidoACancelar = null;
-
-function cargarPedidos() {
-    // Aquí deberías hacer una llamada a tu API o base de datos
-    // Por ahora, usaremos datos de ejemplo
-    pedidosOriginales = [
-        { id: 'PED001', cliente: 'Juan Pérez', fecha: '2023-04-15', total: 129.99, estado: 'Pendiente', direccion: 'Calle 123, Ciudad' },
-        { id: 'PED002', cliente: 'María García', fecha: '2023-04-14', total: 89.50, estado: 'Enviado', direccion: 'Avenida 456, Pueblo' },
-        { id: 'PED003', cliente: 'Carlos López', fecha: '2023-04-13', total: 199.99, estado: 'Entregado', direccion: 'Plaza 789, Villa' },
-    ];
-    pedidos = [...pedidosOriginales]; // Copia todos los pedidos a la variable de trabajo
-    mostrarPedidos();
-    actualizarPaginacion();
+async function cargarPedidos() {
+    try {
+        const response = await fetch('/api/pedidos');
+        if (!response.ok) {
+            throw new Error('Error al cargar los pedidos');
+        }
+        pedidosOriginales = await response.json();
+        pedidos = [...pedidosOriginales];
+        mostrarPedidos();
+        actualizarPaginacion();
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta('Error al cargar los pedidos', 'danger');
+    }
 }
 
 function mostrarPedidos() {
     const tbody = document.getElementById('pedidosTableBody');
-    tbody.innerHTML = '';
-    
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const pedidosPaginados = pedidos.slice(startIndex, endIndex);
+    if (!tbody) return;
 
-    pedidosPaginados.forEach(pedido => {
+    tbody.innerHTML = '';
+    const inicio = (currentPage - 1) * pedidosPorPagina;
+    const fin = inicio + pedidosPorPagina;
+    const pedidosPagina = pedidos.slice(inicio, fin);
+
+    pedidosPagina.forEach(pedido => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td data-label="ID">${pedido.id}</td>
-            <td data-label="Cliente">${pedido.cliente}</td>
-            <td data-label="Fecha">${pedido.fecha}</td>
-            <td data-label="Total">$${pedido.total.toFixed(2)}</td>
-            <td data-label="Estado"><span class="estado-badge estado-${pedido.estado.toLowerCase()}">${pedido.estado}</span></td>
-            <td data-label="Dirección">${pedido.direccion}</td>
-            <td data-label="Acciones">
-                <button class="btn btn-sm btn-primary editar-pedido" data-id="${pedido.id}">Editar</button>
-                <button class="btn btn-sm btn-danger cancelar-pedido" data-id="${pedido.id}">Cancelar</button>
+            <td>${pedido.id}</td>
+            <td>${pedido.cliente_nombre || 'Cliente no disponible'}</td>
+            <td>${new Date(pedido.fecha_pedido).toLocaleString()}</td>
+            <td>$${parseFloat(pedido.total).toFixed(2)}</td>
+            <td>${pedido.estado}</td>
+            <td>${pedido.direccion_envio || 'No disponible'}</td>
+            <td>
+                <button class="btn btn-sm btn-info ver-detalles" data-id="${pedido.id}">Ver detalles</button>
+                <button class="btn btn-sm btn-warning editar" data-id="${pedido.id}">Editar</button>
+                <button class="btn btn-sm btn-danger eliminar" data-id="${pedido.id}">Eliminar</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
-
-    // Agregar event listeners a los botones de editar
-    document.querySelectorAll('.editar-pedido').forEach(button => {
-        button.addEventListener('click', function() {
-            const pedidoId = this.getAttribute('data-id');
-            abrirModalEditarPedido(pedidoId);
-        });
-    });
-
-    // Agregar event listeners a los botones de cancelar
-    document.querySelectorAll('.cancelar-pedido').forEach(button => {
-        button.addEventListener('click', function() {
-            const pedidoId = this.getAttribute('data-id');
-            mostrarConfirmacionCancelarPedido(pedidoId);
-        });
-    });
-}
-
-function mostrarConfirmacionCancelarPedido(pedidoId) {
-    pedidoACancelar = pedidoId;
-    const modal = new bootstrap.Modal(document.getElementById('confirmarCancelarPedidoModal'));
-    modal.show();
-}
-
-function cancelarPedido() {
-    if (pedidoACancelar) {
-        const pedidoIndex = pedidos.findIndex(pedido => pedido.id === pedidoACancelar);
-        if (pedidoIndex !== -1) {
-            pedidos[pedidoIndex].estado = 'Cancelado';
-            mostrarPedidos();
-            pedidoACancelar = null;
-            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarCancelarPedidoModal'));
-            modal.hide();
-        }
-    }
-}
-
-function abrirModalEditarPedido(pedidoId) {
-    const pedido = pedidos.find(p => p.id === pedidoId);
-    if (pedido) {
-        document.getElementById('editPedidoId').value = pedido.id;
-        document.getElementById('editPedidoCliente').value = pedido.cliente;
-        document.getElementById('editPedidoFecha').value = pedido.fecha;
-        document.getElementById('editPedidoTotal').value = pedido.total;
-        document.getElementById('editPedidoEstado').value = pedido.estado;
-        document.getElementById('editPedidoDireccion').value = pedido.direccion;
-
-        const modal = new bootstrap.Modal(document.getElementById('editarPedidoModal'));
-        modal.show();
-    }
-}
-
-function validarFormularioPedido() {
-    const cliente = document.getElementById('editPedidoCliente').value.trim();
-    const fecha = document.getElementById('editPedidoFecha').value.trim();
-    const total = document.getElementById('editPedidoTotal').value.trim();
-    const estado = document.getElementById('editPedidoEstado').value.trim();
-    const direccion = document.getElementById('editPedidoDireccion').value.trim();
-
-    if (cliente === '') {
-        mostrarError('editPedidoCliente', 'El cliente es obligatorio');
-        return false;
-    }
-
-    if (fecha === '') {
-        mostrarError('editPedidoFecha', 'La fecha es obligatoria');
-        return false;
-    }
-
-    if (total === '' || isNaN(total) || parseFloat(total) <= 0) {
-        mostrarError('editPedidoTotal', 'El total debe ser un número positivo');
-        return false;
-    }
-
-    if (estado === '') {
-        mostrarError('editPedidoEstado', 'El estado es obligatorio');
-        return false;
-    }
-
-    if (direccion === '') {
-        mostrarError('editPedidoDireccion', 'La dirección es obligatoria');
-        return false;
-    }
-
-    return true;
-}
-
-function mostrarError(campoId, mensaje) {
-    const campo = document.getElementById(campoId);
-    campo.classList.add('is-invalid');
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'invalid-feedback';
-    errorDiv.textContent = mensaje;
-    campo.parentNode.appendChild(errorDiv);
-}
-
-function limpiarErrores() {
-    const campos = document.querySelectorAll('.is-invalid');
-    campos.forEach(campo => {
-        campo.classList.remove('is-invalid');
-        const errorDiv = campo.parentNode.querySelector('.invalid-feedback');
-        if (errorDiv) {
-            errorDiv.remove();
-        }
-    });
-}
-
-function guardarCambiosPedido() {
-    limpiarErrores();
-    if (validarFormularioPedido()) {
-        const pedidoId = document.getElementById('editPedidoId').value;
-        const pedidoIndex = pedidos.findIndex(p => p.id === pedidoId);
-
-        if (pedidoIndex !== -1) {
-            pedidos[pedidoIndex] = {
-                id: pedidoId,
-                cliente: document.getElementById('editPedidoCliente').value,
-                fecha: document.getElementById('editPedidoFecha').value,
-                total: parseFloat(document.getElementById('editPedidoTotal').value),
-                estado: document.getElementById('editPedidoEstado').value,
-                direccion: document.getElementById('editPedidoDireccion').value
-            };
-
-            mostrarPedidos();
-            const modal = bootstrap.Modal.getInstance(document.getElementById('editarPedidoModal'));
-            modal.hide();
-        }
-    }
 }
 
 function actualizarPaginacion() {
-    const totalPages = Math.ceil(pedidos.length / itemsPerPage);
-    const paginationElement = document.getElementById('pedidosPagination');
-    paginationElement.innerHTML = '';
+    const paginacion = document.getElementById('pedidosPagination');
+    if (!paginacion) return;
 
-    const ul = document.createElement('ul');
-    ul.className = 'pagination justify-content-center';
+    const totalPaginas = Math.ceil(pedidos.length / pedidosPorPagina);
+    paginacion.innerHTML = '';
 
-    // Botón "Anterior"
-    const liPrev = document.createElement('li');
-    liPrev.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-    liPrev.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">&laquo;</a>`;
-    ul.appendChild(liPrev);
+    const liAnterior = document.createElement('li');
+    liAnterior.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+    liAnterior.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">&laquo;</a>`;
+    paginacion.appendChild(liAnterior);
 
-    // Página actual
-    const liCurrent = document.createElement('li');
-    liCurrent.className = 'page-item active';
-    liCurrent.innerHTML = `<span class="page-link">${currentPage}</span>`;
-    ul.appendChild(liCurrent);
+    const liActual = document.createElement('li');
+    liActual.className = 'page-item active';
+    liActual.innerHTML = `<span class="page-link text-dark">${currentPage}</span>`;
+    paginacion.appendChild(liActual);
 
-    // Botón "Siguiente"
-    const liNext = document.createElement('li');
-    liNext.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-    liNext.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">&raquo;</a>`;
-    ul.appendChild(liNext);
+    const liSiguiente = document.createElement('li');
+    liSiguiente.className = `page-item ${currentPage === totalPaginas ? 'disabled' : ''}`;
+    liSiguiente.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">&raquo;</a>`;
+    paginacion.appendChild(liSiguiente);
 
-    // Información de página actual / total de páginas
     const liInfo = document.createElement('li');
     liInfo.className = 'page-item disabled';
-    liInfo.innerHTML = `<span class="page-link">${currentPage}/${totalPages}</span>`;
-    ul.appendChild(liInfo);
-
-    paginationElement.appendChild(ul);
+    liInfo.innerHTML = `<span class="page-link">${currentPage}/${totalPaginas}</span>`;
+    paginacion.appendChild(liInfo);
 }
 
-function cambiarPagina(newPage) {
-    const totalPages = Math.ceil(pedidos.length / itemsPerPage);
-    if (newPage >= 1 && newPage <= totalPages) {
-        currentPage = newPage;
+function mostrarAlerta(mensaje, tipo) {
+    const alertPlaceholder = document.getElementById('alertPlaceholder');
+    if (!alertPlaceholder) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+        <div class="alert alert-${tipo} alert-dismissible" role="alert">
+           ${mensaje}
+           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+
+    alertPlaceholder.appendChild(wrapper);
+
+    // No es necesario remover la alerta manualmente ya que la página se recargará
+}
+
+async function verDetallesPedido(pedidoId) {
+    try {
+        const response = await fetch(`/api/pedidos/${pedidoId}`);
+        if (!response.ok) {
+            throw new Error('Error al cargar los detalles del pedido');
+        }
+        const pedido = await response.json();
+        const modalBody = document.getElementById('detallesPedidoModalBody');
+        modalBody.innerHTML = `
+            <p><strong>ID:</strong> ${pedido.id}</p>
+            <p><strong>Cliente:</strong> ${pedido.cliente_nombre || 'Usuario no disponible'}</p>
+            <p><strong>Fecha:</strong> ${new Date(pedido.fecha_pedido).toLocaleString()}</p>
+            <p><strong>Total:</strong> $${parseFloat(pedido.total).toFixed(2)}</p>
+            <p><strong>Estado:</strong> ${pedido.estado}</p>
+            <p><strong>Dirección de envío:</strong> ${pedido.direccion_envio}</p>
+            <h6>Productos:</h6>
+            <ul>
+                ${pedido.detalles && pedido.detalles.length > 0 ? pedido.detalles.map(detalle => `
+                    <li>${detalle.producto_nombre || 'Producto no disponible'} - Cantidad: ${detalle.cantidad} - Precio: $${parseFloat(detalle.precio_unitario).toFixed(2)}</li>
+                `).join('') : 'No hay detalles disponibles'}
+            </ul>
+        `;
+        const modal = new bootstrap.Modal(document.getElementById('verDetallesPedidoModal'));
+        modal.show();
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta('Error al cargar los detalles del pedido', 'danger');
+    }
+}
+
+async function abrirModalEditarPedido(pedidoId) {
+    try {
+        const response = await fetch(`/api/pedidos/${pedidoId}`);
+        if (!response.ok) {
+            throw new Error('Error al obtener los datos del pedido');
+        }
+        const pedido = await response.json();
+        
+        document.getElementById('editPedidoId').value = pedido.id;
+        document.getElementById('editPedidoEstado').value = pedido.estado;
+        document.getElementById('editPedidoDireccion').value = pedido.direccion_envio || '';
+
+        const modal = new bootstrap.Modal(document.getElementById('editarPedidoModal'));
+        modal.show();
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta('Error al cargar los datos del pedido', 'danger');
+    }
+}
+
+async function guardarCambiosPedido() {
+    const form = document.getElementById('editarPedidoForm');
+    const formData = new FormData(form);
+    const pedidoId = formData.get('id');
+
+    const pedidoActualizado = {
+        id: pedidoId,
+        estado: formData.get('estado'),
+        direccion_envio: formData.get('direccion')
+    };
+
+    try {
+        const response = await fetch(`/api/pedidos/${pedidoId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(pedidoActualizado)
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al actualizar el pedido');
+        }
+
+        const pedidoActualizadoResponse = await response.json();
+        
+        // Actualizar el pedido en los arrays locales
+        const index = pedidos.findIndex(p => p.id === pedidoActualizadoResponse.id);
+        if (index !== -1) {
+            pedidos[index] = { ...pedidos[index], ...pedidoActualizadoResponse };
+            pedidosOriginales[index] = { ...pedidosOriginales[index], ...pedidoActualizadoResponse };
+        }
+
+        mostrarAlerta('Pedido actualizado con éxito', 'success');
+        cerrarModal('editarPedidoModal');
         mostrarPedidos();
         actualizarPaginacion();
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta('Error al actualizar el pedido', 'danger');
     }
 }
 
-function realizarBusqueda() {
-    const query = document.getElementById('searchInputPedidos').value;
-    if (query.trim() === '') {
-        pedidos = [...pedidosOriginales]; // Restaura todos los pedidos si la búsqueda está vacía
-    } else {
-        pedidos = pedidosOriginales.filter(pedido => 
-            pedido.id.toLowerCase().includes(query.toLowerCase()) ||
-            pedido.cliente.toLowerCase().includes(query.toLowerCase())
-        );
+function abrirModalConfirmarEliminar(pedidoId) {
+    const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarPedidoModal'));
+    modal.show();
+    document.getElementById('confirmarEliminarPedidoBtn').setAttribute('data-id', pedidoId);
+}
+
+async function eliminarPedido() {
+    const pedidoId = this.getAttribute('data-id');
+    try {
+        const response = await fetch(`/api/pedidos/${pedidoId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al eliminar el pedido');
+        }
+
+        // Cerrar el modal de confirmación
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarPedidoModal'));
+        modal.hide();
+
+        // Mostrar alerta de éxito
+        mostrarAlerta('Pedido eliminado con éxito', 'success');
+
+        // Recargar la página después de un breve retraso
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000); // Espera 1 segundo antes de recargar
+
+    } catch (error) {
+        console.error('Error al eliminar el pedido:', error);
+        mostrarAlerta('Error al eliminar el pedido', 'danger');
     }
-    currentPage = 1; // Volver a la primera página después de buscar
-    mostrarPedidos();
-    actualizarPaginacion();
+}
+
+function cerrarModal(modalId) {
+const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+if (modal) {
+    modal.hide();
+}
 }
 
 function ordenarPedidos(columna) {
-    if (columna === sortColumn) {
-        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    } else {
-        sortColumn = columna;
-        sortOrder = 'asc';
-    }
-
-    pedidos.sort((a, b) => {
-        if (a[columna] < b[columna]) return sortOrder === 'asc' ? -1 : 1;
-        if (a[columna] > b[columna]) return sortOrder === 'asc' ? 1 : -1;
-        return 0;
-    });
-
-    currentPage = 1; // Volver a la primera página después de ordenar
-    mostrarPedidos();
-    actualizarPaginacion();
+if (columna === sortColumn) {
+    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+} else {
+    sortColumn = columna;
+    sortOrder = 'asc';
 }
 
-function filtrarPedidosPorEstado() {
-    const estadoSeleccionado = document.getElementById('filtroEstadoPedido').value;
+pedidos.sort((a, b) => {
+    let valorA = a[columna];
+    let valorB = b[columna];
 
-    if (estadoSeleccionado === '') {
-        pedidos = [...pedidosOriginales];
-    } else {
-        pedidos = pedidosOriginales.filter(pedido => pedido.estado === estadoSeleccionado);
+    if (columna === 'fecha_pedido') {
+        valorA = new Date(valorA);
+        valorB = new Date(valorB);
+    } else if (columna === 'total') {
+        valorA = parseFloat(valorA);
+        valorB = parseFloat(valorB);
     }
 
-    currentPage = 1;
-    mostrarPedidos();
-    actualizarPaginacion();
+    if (valorA < valorB) return sortOrder === 'asc' ? -1 : 1;
+    if (valorA > valorB) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+});
+
+mostrarPedidos();
+actualizarPaginacion();
+}
+
+function realizarBusqueda() {
+const query = document.getElementById('searchInputPedidos').value.toLowerCase();
+pedidos = pedidosOriginales.filter(pedido => 
+    pedido.id.toLowerCase().includes(query) ||
+    pedido.cliente.toLowerCase().includes(query)
+);
+currentPage = 1;
+mostrarPedidos();
+actualizarPaginacion();
+}
+
+function filtrarPorEstado() {
+const estado = document.getElementById('filtroEstadoPedido').value;
+if (estado === '') {
+    pedidos = [...pedidosOriginales];
+} else {
+    pedidos = pedidosOriginales.filter(pedido => pedido.estado === estado);
+}
+currentPage = 1;
+mostrarPedidos();
+actualizarPaginacion();
 }
 
 function configurarEventListeners() {
-    document.getElementById('searchButtonPedidos').addEventListener('click', realizarBusqueda);
-    document.getElementById('searchInputPedidos').addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-            realizarBusqueda();
-        }
-    });
-
-    document.querySelectorAll('th a').forEach(th => {
-        th.addEventListener('click', function(e) {
-            e.preventDefault();
-            const columna = this.getAttribute('data-sort');
-            ordenarPedidos(columna);
+    const pedidosTableBody = document.getElementById('pedidosTableBody');
+    if (pedidosTableBody) {
+        pedidosTableBody.addEventListener('click', function(e) {
+            if (e.target.classList.contains('ver-detalles')) {
+                const pedidoId = e.target.getAttribute('data-id');
+                verDetallesPedido(pedidoId);
+            } else if (e.target.classList.contains('editar')) {
+                const pedidoId = e.target.getAttribute('data-id');
+                abrirModalEditarPedido(pedidoId);
+            } else if (e.target.classList.contains('eliminar')) {
+                const pedidoId = e.target.getAttribute('data-id');
+                abrirModalConfirmarEliminar(pedidoId);
+            }
         });
-    });
+    }
 
-    document.getElementById('pedidosPagination').addEventListener('click', function(e) {
-        e.preventDefault();
-        if (e.target.tagName === 'A' && e.target.hasAttribute('data-page')) {
-            const newPage = parseInt(e.target.getAttribute('data-page'));
-            cambiarPagina(newPage);
-        }
-    });
+    const confirmarEliminarPedidoBtn = document.getElementById('confirmarEliminarPedidoBtn');
+    if (confirmarEliminarPedidoBtn) {
+        confirmarEliminarPedidoBtn.addEventListener('click', eliminarPedido);
+    }
 
-    document.getElementById('guardarPedidoBtn').addEventListener('click', guardarCambiosPedido);
-    document.getElementById('confirmarCancelarPedidoBtn').addEventListener('click', cancelarPedido);
-    document.getElementById('filtrarEstadoBtn').addEventListener('click', filtrarPedidosPorEstado);
+    const guardarPedidoBtn = document.getElementById('guardarPedidoBtn');
+    if (guardarPedidoBtn) {
+        guardarPedidoBtn.addEventListener('click', guardarCambiosPedido);
+    }
+
+    const searchButtonPedidos = document.getElementById('searchButtonPedidos');
+    if (searchButtonPedidos) {
+        searchButtonPedidos.addEventListener('click', realizarBusqueda);
+    }
+
+    const filtrarEstadoBtn = document.getElementById('filtrarEstadoBtn');
+    if (filtrarEstadoBtn) {
+        filtrarEstadoBtn.addEventListener('click', filtrarPorEstado);
+    }
+
+    const pedidosPagination = document.getElementById('pedidosPagination');
+    if (pedidosPagination) {
+        pedidosPagination.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                currentPage = parseInt(e.target.getAttribute('data-page'));
+                mostrarPedidos();
+                actualizarPaginacion();
+            }
+        });
+    }
+
+    const pedidosTable = document.getElementById('pedidosTable');
+    if (pedidosTable) {
+        pedidosTable.querySelector('thead').addEventListener('click', function(e) {
+            if (e.target.tagName === 'A' && e.target.hasAttribute('data-sort')) {
+                e.preventDefault();
+                ordenarPedidos(e.target.getAttribute('data-sort'));
+            }
+        });
+    }
 }
 
 export function activarPedidos() {
-    cargarPedidos();
-    configurarEventListeners();
+    return new Promise((resolve) => {
+        const checkContent = () => {
+            const pedidosTableBody = document.getElementById('pedidosTableBody');
+            const pedidosPagination = document.getElementById('pedidosPagination');
+            if (pedidosTableBody && pedidosPagination) {
+                cargarPedidos().then(() => {
+                    configurarEventListeners();
+                    mostrarPedidos();
+                    resolve();
+                });
+            } else {
+                setTimeout(checkContent, 100); // Verificar cada 100ms
+            }
+        };
+        checkContent();
+    });
 }

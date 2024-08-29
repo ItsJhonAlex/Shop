@@ -1,4 +1,4 @@
-import { agregarAlCarrito } from './shop.js';
+import { agregarAlCarrito, actualizarContadorCarrito } from './shop.js';
 
 // Array para almacenar los productos
 let productos = [];
@@ -54,6 +54,7 @@ function mostrarProductos() {
             const id = parseInt(e.target.getAttribute('data-id'));
             const producto = productos.find(p => p.id === id);
             agregarAlCarrito(producto);
+            actualizarContadorCarrito();
         });
     });
 }

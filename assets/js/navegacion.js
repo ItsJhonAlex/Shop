@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.nav-link[data-section]');
     const cerrarSesionBtn = document.getElementById('cerrarSesion');
 
+    // Añadir esta línea para obtener la sección actual del localStorage
+    let seccionActual = localStorage.getItem('seccionActual') || 'clientes';
+
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -16,21 +19,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function cargarSeccion(section) {
+        localStorage.setItem('seccionActual', section);
+        
         fetch(`admin/${section}`)
             .then(response => response.text())
             .then(html => {
                 contenidoPrincipal.innerHTML = html;
                 switch(section) {
                     case 'clientes':
-                        activarClientes();
-                        break;
+                        return activarClientes();
                     case 'productos':
-                        activarProductos();
-                        break;
+                        return activarProductos();
                     case 'pedidos':
-                        activarPedidos();
-                        break;
+                        return activarPedidos();
+                    default:
+                        return Promise.resolve();
                 }
+            })
+            .then(() => {
+                console.log(`Sección ${section} cargada y activada`);
             })
             .catch(error => console.error('Error al cargar la sección:', error));
     }
@@ -38,14 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para cerrar sesión
     function cerrarSesion() {
         if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-            // Aquí puedes agregar la lógica para limpiar la sesión
-            // Por ejemplo, eliminar tokens de autenticación del localStorage
             localStorage.removeItem('authToken');
-            
-            // Mostrar un mensaje de éxito
+            localStorage.removeItem('seccionActual'); // Eliminar la sección actual al cerrar sesión
             alert('Has cerrado sesión exitosamente');
-            
-            // Redirigir a la página principal
             window.location.href = '/';
         }
     }
@@ -55,6 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cerrarSesionBtn.addEventListener('click', cerrarSesion);
     }
 
-    // Cargar la sección de clientes por defecto
-    cargarSeccion('clientes');
+    // Cargar la sección guardada o la de clientes por defecto
+    cargarSeccion(seccionActual);
 });

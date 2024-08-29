@@ -64,7 +64,7 @@ function actualizarPaginacion() {
 
     const liActual = document.createElement('li');
     liActual.className = 'page-item active';
-    liActual.innerHTML = `<span class="page-link">${currentPage}</span>`;
+    liActual.innerHTML = `<span class="page-link text-dark">${currentPage}</span>`;
     paginacion.appendChild(liActual);
 
     const liSiguiente = document.createElement('li');
@@ -83,19 +83,22 @@ function mostrarAlerta(mensaje, tipo) {
     if (!alertPlaceholder) return;
 
     const wrapper = document.createElement('div');
-    wrapper.innerHTML = [
-        `<div class="alert alert-${tipo} alert-dismissible" role="alert">`,
-        `   ${mensaje}`,
-        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-        '</div>'
-    ].join('');
+    wrapper.innerHTML = `
+        <div class="alert alert-${tipo} alert-dismissible" role="alert">
+           ${mensaje}
+           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
 
-    alertPlaceholder.append(wrapper);
+    alertPlaceholder.appendChild(wrapper);
 
+    // Remover la alerta después de 5 segundos
     setTimeout(() => {
-        const alert = bootstrap.Alert.getOrCreateInstance(wrapper.firstElementChild);
-        alert.close();
-    }, 3000);
+        const alert = wrapper.firstElementChild;
+        if (alert) {
+            alert.remove();
+        }
+    }, 5000);
 }
 
 function configurarEventListeners() {
@@ -144,7 +147,7 @@ function configurarEventListeners() {
 
     const btnConfirmarEliminar = document.getElementById('confirmarEliminarProductoBtn');
     if (btnConfirmarEliminar) {
-        btnConfirmarEliminar.addEventListener('click', confirmarEliminarProducto);
+        btnConfirmarEliminar.addEventListener('click', eliminarProducto);
     }
 
     // Agregar event listeners para ordenar
@@ -187,8 +190,21 @@ function configurarEventListeners() {
 }
 
 function prepararModalNuevoProducto() {
+    // Reiniciar el formulario
     document.getElementById('nuevoProductoForm').reset();
-    document.getElementById('nuevoProductoImagenPreview').style.display = 'none';
+
+    // Limpiar la vista previa de la imagen si existe
+    const imagenPreview = document.getElementById('imagenPreview');
+    if (imagenPreview) {
+        imagenPreview.style.display = 'none';
+        imagenPreview.src = '';
+    }
+
+    // Restablecer el campo de archivo
+    const inputImagen = document.getElementById('imagen');
+    if (inputImagen) {
+        inputImagen.value = '';
+    }
 }
 
 async function guardarNuevoProducto() {
@@ -242,16 +258,21 @@ async function abrirModalEditarProducto(productoId) {
         document.getElementById('editProductoStock').value = producto.stock;
         document.getElementById('editProductoDescripcion').value = producto.descripcion;
         
-        // Resetear el campo de imagen
-        document.getElementById('editProductoImagen').value = '';
+        // Llenar el campo oculto con la URL de la imagen actual
+        document.getElementById('editProductoImagenActual').value = producto.imagen;
         
+        // Mostrar la imagen actual en la vista previa
         const imagenPreview = document.getElementById('editProductoImagenPreview');
         if (producto.imagen) {
             imagenPreview.src = producto.imagen;
             imagenPreview.style.display = 'block';
         } else {
+            imagenPreview.src = '';
             imagenPreview.style.display = 'none';
         }
+        
+        // Limpiar el input de archivo
+        document.getElementById('editProductoImagen').value = '';
 
         const modal = new bootstrap.Modal(document.getElementById('editarProductoModal'));
         modal.show();
@@ -266,13 +287,6 @@ async function guardarCambiosProducto() {
     const formData = new FormData(form);
     const productoId = formData.get('id');
 
-    // Verificar si se ha seleccionado una nueva imagen
-    const imagenInput = document.getElementById('editProductoImagen');
-    if (imagenInput.files.length === 0) {
-        // Si no se seleccionó una nueva imagen, eliminar el campo de imagen del FormData
-        formData.delete('imagen');
-    }
-
     try {
         const response = await fetch(`/api/productos/${productoId}`, {
             method: 'PUT',
@@ -280,35 +294,38 @@ async function guardarCambiosProducto() {
         });
 
         if (!response.ok) {
-            throw new Error('Error al actualizar el producto');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al actualizar el producto');
         }
 
-        const productoActualizado = await response.json();
-        
-        const index = productos.findIndex(p => p.id === productoActualizado.id);
-        if (index !== -1) {
-            productos[index] = productoActualizado;
-            productosOriginales[index] = productoActualizado;
-        }
+        // Cerrar el modal de edición
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editarProductoModal'));
+        modal.hide();
 
+        // Mostrar alerta de éxito
         mostrarAlerta('Producto actualizado con éxito', 'success');
-        cerrarModal('editarProductoModal');
-        mostrarProductos();
+
+        // Recargar todos los productos desde el servidor
+        await cargarProductos();
+
     } catch (error) {
-        console.error('Error:', error);
-        mostrarAlerta('Error al actualizar el producto', 'danger');
+        console.error('Error al actualizar el producto:', error);
+        mostrarAlerta(error.message, 'danger');
     }
 }
 
 function mostrarVistaPrevia(input, previewId) {
+    const preview = document.getElementById(previewId);
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            const preview = document.getElementById(previewId);
             preview.src = e.target.result;
             preview.style.display = 'block';
         };
         reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '';
+        preview.style.display = 'none';
     }
 }
 
@@ -318,8 +335,8 @@ function abrirModalConfirmarEliminar(productoId) {
     document.getElementById('confirmarEliminarProductoBtn').setAttribute('data-id', productoId);
 }
 
-async function confirmarEliminarProducto() {
-    const productoId = this.getAttribute('data-id');
+async function eliminarProducto() {
+    const productoId = document.getElementById('confirmarEliminarProductoBtn').getAttribute('data-id');
     try {
         const response = await fetch(`/api/productos/${productoId}`, {
             method: 'DELETE'
@@ -329,15 +346,20 @@ async function confirmarEliminarProducto() {
             throw new Error('Error al eliminar el producto');
         }
 
-        productos = productos.filter(p => p.id !== productoId);
-        productosOriginales = productosOriginales.filter(p => p.id !== productoId);
+        // Cerrar el modal de confirmación
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarProductoModal'));
+        modal.hide();
 
+        // Mostrar alerta de éxito
         mostrarAlerta('Producto eliminado con éxito', 'success');
-        mostrarProductos();
-        actualizarPaginacion();
-        cerrarModal('confirmarEliminarProductoModal');
+
+        // Recargar la página después de un breve retraso
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000); // Espera 1 segundo antes de recargar
+
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error al eliminar el producto:', error);
         mostrarAlerta('Error al eliminar el producto', 'danger');
     }
 }
@@ -426,6 +448,7 @@ export function activarProductos() {
 }
 
 function inicializarProductos() {
-    cargarProductos();
-    configurarEventListeners();
+    cargarProductos().then(() => {
+        configurarEventListeners();
+    });
 }

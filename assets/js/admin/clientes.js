@@ -11,6 +11,7 @@ async function cargarClientes() {
         }
         clientesOriginales = await response.json();
         clientes = [...clientesOriginales];
+        currentPage = 1; // Resetear a la primera página
         mostrarClientes();
         actualizarPaginacion();
     } catch (error) {
@@ -21,32 +22,46 @@ async function cargarClientes() {
 
 function mostrarClientes() {
     const tbody = document.getElementById('clientesTableBody');
+    if (!tbody) {
+        console.error('No se encontró el elemento clientesTableBody');
+        return;
+    }
     tbody.innerHTML = '';
     const inicio = (currentPage - 1) * clientesPorPagina;
     const fin = inicio + clientesPorPagina;
     const clientesPagina = clientes.slice(inicio, fin);
 
-    clientesPagina.forEach(cliente => {
+    if (clientesPagina.length === 0) {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${cliente.id}</td>
-            <td>${cliente.nombre}</td>
-            <td>${cliente.email}</td>
-            <td>${cliente.direccion || ''}</td>
-            <td>${cliente.rol}</td>
-            <td class="text-end">
-                <button class="btn btn-sm btn-info ver-mas" data-id="${cliente.id}">Ver más</button>
-                <button class="btn btn-sm btn-primary editar" data-id="${cliente.id}">Editar</button>
-                <button class="btn btn-sm btn-danger eliminar" data-id="${cliente.id}">Eliminar</button>
-            </td>
-        `;
+        tr.innerHTML = '<td colspan="6" class="text-center">No hay clientes para mostrar</td>';
         tbody.appendChild(tr);
-    });
+    } else {
+        clientesPagina.forEach(cliente => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${cliente.id}</td>
+                <td>${cliente.nombre}</td>
+                <td>${cliente.email}</td>
+                <td>${cliente.direccion || ''}</td>
+                <td>${cliente.rol}</td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-info ver-mas" data-id="${cliente.id}">Ver más</button>
+                    <button class="btn btn-sm btn-primary editar" data-id="${cliente.id}">Editar</button>
+                    <button class="btn btn-sm btn-danger eliminar" data-id="${cliente.id}">Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
 }
 
 function actualizarPaginacion() {
     const totalPaginas = Math.ceil(clientes.length / clientesPorPagina);
     const paginacion = document.getElementById('clientesPagination');
+    if (!paginacion) {
+        console.error('No se encontró el elemento clientesPagination');
+        return;
+    }
     paginacion.innerHTML = '';
 
     // Botón "Anterior"
@@ -167,6 +182,8 @@ async function guardarCambiosCliente() {
             const modal = bootstrap.Modal.getInstance(document.getElementById('editarClienteModal'));
             modal.hide();
             mostrarAlerta('Cliente actualizado con éxito', 'success');
+            await cargarClientes();
+            mostrarClientes();
         } else {
             throw new Error('Error al actualizar el cliente');
         }
@@ -191,13 +208,15 @@ async function eliminarCliente() {
         });
 
         if (response.ok) {
-            clientesOriginales = clientesOriginales.filter(c => c.id !== clienteId);
-            clientes = [...clientesOriginales];
-            mostrarClientes();
-            actualizarPaginacion();
+            // Cerrar el modal de confirmación
             const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarClienteModal'));
             modal.hide();
+
+            // Mostrar alerta de éxito
             mostrarAlerta('Cliente eliminado con éxito', 'success');
+
+            // Recargar los clientes y actualizar la vista
+            await cargarClientes();
         } else {
             throw new Error('Error al eliminar el cliente');
         }
@@ -234,14 +253,16 @@ async function agregarNuevoCliente() {
             const modal = bootstrap.Modal.getInstance(document.getElementById('nuevoClienteModal'));
             modal.hide();
             mostrarAlerta('Cliente agregado con éxito', 'success');
-            // Limpiar el formulario
             document.getElementById('nuevoClienteForm').reset();
+            await cargarClientes();
+            mostrarClientes();
         } else {
-            throw new Error('Error al agregar el cliente');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al agregar el cliente');
         }
     } catch (error) {
         console.error('Error al agregar el nuevo cliente:', error);
-        mostrarAlerta('Error al agregar el nuevo cliente', 'danger');
+        mostrarAlerta(error.message, 'danger');
     }
 }
 
@@ -350,13 +371,20 @@ function filtrarPorDireccion() {
 }
 
 export function activarClientes() {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarClientes();
-            configurarEventListeners();
-        });
-    } else {
-        cargarClientes();
-        configurarEventListeners();
-    }
+    return new Promise((resolve) => {
+        const checkContent = () => {
+            const clientesTableBody = document.getElementById('clientesTableBody');
+            const clientesPagination = document.getElementById('clientesPagination');
+            if (clientesTableBody && clientesPagination) {
+                cargarClientes().then(() => {
+                    configurarEventListeners();
+                    mostrarClientes();
+                    resolve();
+                });
+            } else {
+                setTimeout(checkContent, 100); // Verificar cada 100ms
+            }
+        };
+        checkContent();
+    });
 }

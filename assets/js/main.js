@@ -1,5 +1,5 @@
 import { cargarProductos } from './productos.js';
-import { obtenerCarrito, agregarAlCarrito, actualizarContadorCarrito } from './shop.js';
+import { actualizarContadorCarrito } from './shop.js';
 import { verificarSesion, cerrarSesion } from './auth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {

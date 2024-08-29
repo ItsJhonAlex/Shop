@@ -1,5 +1,7 @@
 import { verificarSesion, cerrarSesion } from '../auth.js';
 import { activarClientes } from './clientes.js';
+import { activarPedidos } from './pedidos.js';
+import { activarProductos } from './productos.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     verificarSesion();
@@ -19,6 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Activar la gestión de clientes
     activarClientes();
+
+    // Activar la gestión de pedidos o productos según la ruta actual
+    const currentPage = window.location.pathname;
+
+    if (currentPage.includes('/admin/productos')) {
+        activarProductos();
+    } else if (currentPage.includes('/admin/pedidos')) {
+        activarPedidos();
+    }
 
     // Aquí puedes agregar más lógica específica del panel de administración
 });
